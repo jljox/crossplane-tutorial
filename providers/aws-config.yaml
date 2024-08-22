@@ -4,6 +4,7 @@ kind: ProviderConfig
 metadata:
   name: default
 spec:
+  region: ap-southeast-2
   credentials:
     source: Secret
     secretRef:
