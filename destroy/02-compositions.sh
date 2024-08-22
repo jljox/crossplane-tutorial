@@ -21,10 +21,6 @@ echo "
 |kind CLI        |Yes                  |'https://kind.sigs.k8s.io/docs/user/quick-start/#installation'|
 |AWS account with admin permissions|If using AWS|'https://aws.amazon.com'                  |
 |AWS CLI         |If using AWS         |'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'|
-|Google Cloud account with admin permissions|If using Google Cloud|'https://cloud.google.com'|
-|Google Cloud CLI|If using Google Cloud|'https://cloud.google.com/sdk/docs/install'        |
-|Azure account with admin permissions|If using Azure|'https://azure.microsoft.com'         |
-|az CLI          |If using Azure       |'https://learn.microsoft.com/cli/azure/install-azure-cli'|
 
 If you are running this script from **Nix shell**, most of the requirements are already set with the exception of **Docker** and the **hyperscaler account**.
 " | gum format
@@ -37,26 +33,18 @@ Do you have those tools installed?
 # Crossplane #
 ##############
 
-if [[ "$HYPERSCALER" == "google" ]]; then
+kubectl --namespace a-team delete \
+	--filename examples/$HYPERSCALER-sql-v6.yaml
 
-	gcloud projects delete $PROJECT_ID --quiet
+COUNTER=$(kubectl get managed --no-headers | grep -v database |
+	wc -l)
 
-else
-
-	kubectl --namespace a-team delete \
-		--filename examples/$HYPERSCALER-sql-v6.yaml
-
-	COUNTER=$(kubectl get managed --no-headers | grep -v database \
-		| wc -l)
-
-	while [ $COUNTER -ne 0 ]; do
-		echo "$COUNTER resources still exist. Waiting for them to be deleted..."
-		sleep 30
-		COUNTER=$(kubectl get managed --no-headers \
-			| grep -v database | wc -l)
-	done
-
-fi
+while [ $COUNTER -ne 0 ]; do
+	echo "$COUNTER resources still exist. Waiting for them to be deleted..."
+	sleep 30
+	COUNTER=$(kubectl get managed --no-headers |
+		grep -v database | wc -l)
+done
 
 #########################
 # Control Plane Cluster #

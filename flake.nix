@@ -21,7 +21,6 @@
           pkgs.jq
           pkgs.awscli2
           pkgs.upbound
-          pkgs.teller
           pkgs.crossplane-cli
           pkgs.kubernetes-helm
         ];

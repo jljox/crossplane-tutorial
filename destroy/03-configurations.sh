@@ -19,7 +19,6 @@ echo "
 |Linux Shell     |Yes                  |Use WSL if you are running Windows                 |
 |Docker          |Yes                  |'https://docs.docker.com/engine/install'           |
 |kind CLI        |Yes                  |'https://kind.sigs.k8s.io/docs/user/quick-start/#installation'|
-|Google Cloud CLI|If using Google Cloud|'https://cloud.google.com/sdk/docs/install'        |
 
 If you are running this script from **Nix shell**, most of the requirements are already set with the exception of **Docker** and the **hyperscaler account**.
 " | gum format
@@ -32,26 +31,18 @@ Do you have those tools installed?
 # Crossplane #
 ##############
 
-if [[ "$HYPERSCALER" == "google" ]]; then
+kubectl --namespace a-team delete \
+	--filename examples/$HYPERSCALER-sql-v6.yaml
 
-	gcloud projects delete $PROJECT_ID --quiet
+COUNTER=$(kubectl get managed --no-headers | grep -v database |
+	wc -l)
 
-else
-
-	kubectl --namespace a-team delete \
-		--filename examples/$HYPERSCALER-sql-v6.yaml
-
-	COUNTER=$(kubectl get managed --no-headers | grep -v database \
-		| wc -l)
-
-	while [ $COUNTER -ne 0 ]; do
-		echo "$COUNTER resources still exist. Waiting for them to be deleted..."
-		sleep 30
-		COUNTER=$(kubectl get managed --no-headers \
-			| grep -v database | wc -l)
-	done
-
-fi
+while [ $COUNTER -ne 0 ]; do
+	echo "$COUNTER resources still exist. Waiting for them to be deleted..."
+	sleep 30
+	COUNTER=$(kubectl get managed --no-headers |
+		grep -v database | wc -l)
+done
 
 #########################
 # Control Plane Cluster #

@@ -16,20 +16,6 @@ spec:
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-gcp-sql
-spec:
-  package: xpkg.upbound.io/upbound/provider-gcp-sql:v0.41.0
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-  name: provider-azure-dbforpostgresql
-spec:
-  package: xpkg.upbound.io/upbound/provider-azure-dbforpostgresql:v0.40.0
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
   name: provider-sql
 spec:
   package: xpkg.upbound.io/crossplane-contrib/provider-sql:v0.9.0
@@ -45,9 +31,9 @@ kind: ClusterRoleBinding
 metadata:
   name: crossplane-provider-kubernetes
 subjects:
-- kind: ServiceAccount
-  name: crossplane-provider-kubernetes
-  namespace: crossplane-system
+  - kind: ServiceAccount
+    name: crossplane-provider-kubernetes
+    namespace: crossplane-system
 roleRef:
   kind: ClusterRole
   name: cluster-admin
